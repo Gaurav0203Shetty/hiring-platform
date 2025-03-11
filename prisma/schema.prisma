@@ -19,9 +19,21 @@ model User {
   name     String?
   password String
   role     Role
+  skills   String?  // Candidate's skills as a comma-separated string
+  jobs     Job[]    @relation("UserJobs")
+}
+
+model Job {
+  id             String   @id @default(uuid())
+  title          String
+  description    String
+  requiredSkills String   // Comma-separated list of required skills
+  recruiterId    String
+  recruiter      User     @relation(fields: [recruiterId], references: [id], name: "UserJobs")
+  createdAt      DateTime @default(now())
 }
 
 enum Role {
-  RECRUITER
   CANDIDATE
+  RECRUITER
 }
