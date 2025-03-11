@@ -16,11 +16,32 @@ export async function GET(request: Request) {
   let job = await prisma.job.findUnique({ where: { id: jobId } });
   if (!job) {
     // Fallback dummy job data for testing if job not found in DB
-    const dummyJobs = [
-      { id: 'job1', title: 'Frontend Developer', requiredSkills: 'javascript, react, html, css' },
-      { id: 'job2', title: 'Backend Developer', requiredSkills: 'node.js, express, mongodb' },
+    const dummyJobs: {
+      id: string;
+      title: string;
+      description: string;
+      requiredSkills: string;
+      recruiterId: string;
+      createdAt: Date;
+    }[] = [
+      {
+        id: 'job1',
+        title: 'Frontend Developer',
+        description: 'Develop and design user interfaces.',
+        requiredSkills: 'javascript, react, html, css',
+        recruiterId: 'dummy-recruiter',
+        createdAt: new Date(),
+      },
+      {
+        id: 'job2',
+        title: 'Backend Developer',
+        description: 'Build robust APIs and server-side logic.',
+        requiredSkills: 'node.js, express, mongodb',
+        recruiterId: 'dummy-recruiter',
+        createdAt: new Date(),
+      },
     ];
-    job = dummyJobs.find((j) => j.id === jobId) as { id: string; requiredSkills: string } | undefined;
+    job = dummyJobs.find((j) => j.id === jobId) || null;
   }
 
   // Fetch candidate from the database
@@ -36,6 +57,6 @@ export async function GET(request: Request) {
 
   const score = calculateMatchScore(candidateSkills, jobSkills);
 
-  // Return an array for consistency with the UI mapping
+  // Wrap the result in an array so that the UI mapping works
   return NextResponse.json([{ candidateId: candidate.id, score }]);
 }
