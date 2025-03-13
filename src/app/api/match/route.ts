@@ -1,7 +1,6 @@
-// src/app/api/match/route.ts
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { calculateMatchScore } from '@/lib/match';
+import { calculateAdvancedMatch } from '@/lib/match';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -12,51 +11,28 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
   }
 
-  // Try to fetch the job from the database
-  let job = await prisma.job.findUnique({ where: { id: jobId } });
-  if (!job) {
-    // Fallback dummy job data for testing if job not found in DB
-    const dummyJobs: {
-      id: string;
-      title: string;
-      description: string;
-      requiredSkills: string;
-      recruiterId: string;
-      createdAt: Date;
-    }[] = [
-      {
-        id: 'job1',
-        title: 'Frontend Developer',
-        description: 'Develop and design user interfaces.',
-        requiredSkills: 'javascript, react, html, css',
-        recruiterId: 'dummy-recruiter',
-        createdAt: new Date(),
-      },
-      {
-        id: 'job2',
-        title: 'Backend Developer',
-        description: 'Build robust APIs and server-side logic.',
-        requiredSkills: 'node.js, express, mongodb',
-        recruiterId: 'dummy-recruiter',
-        createdAt: new Date(),
-      },
-    ];
-    job = dummyJobs.find((j) => j.id === jobId) || null;
-  }
-
-  // Fetch candidate from the database
+  const job = await prisma.job.findUnique({ where: { id: jobId } });
   const candidate = await prisma.user.findUnique({ where: { id: candidateId } });
+
   if (!job || !candidate) {
     return NextResponse.json({ error: 'Job or candidate not found' }, { status: 404 });
   }
 
-  const candidateSkills = candidate.skills
-    ? candidate.skills.split(',').map((s: string) => s.trim().toLowerCase())
-    : [];
-  const jobSkills = job.requiredSkills.split(',').map((s: string) => s.trim().toLowerCase());
+  // Fetch Weighted Skills
+  const candidateSkills = await prisma.candidateSkill.findMany({
+    where: { candidateId: candidate.id },
+  });
+  // Convert job.requiredSkills string to WeightedSkill array (assume weight=5 for each)
+  const jobSkills = (job.requiredSkills || '')
+    .split(',')
+    .map((s) => ({ skill: s.trim(), weight: 5 }));
 
-  const score = calculateMatchScore(candidateSkills, jobSkills);
+  // For text similarity, you'd need the candidate's full resume text and job's full description
+  // For now, we assume candidateText = candidate.skills or some stored field
+  const candidateText = candidate.skills || '';
+  const jobText = job.description || '';
 
-  // Wrap the result in an array so that the UI mapping works
+  const score = calculateAdvancedMatch(candidateSkills, jobSkills, candidateText, jobText);
+
   return NextResponse.json([{ candidateId: candidate.id, score }]);
 }

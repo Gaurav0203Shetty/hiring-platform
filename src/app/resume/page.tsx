@@ -43,6 +43,20 @@ export default function ResumeUploadPage() {
     } catch (err) {
       console.error(err);
     }
+    async function updateCandidateRecord(parsedData: any) {
+    const userId = session?.user?.id;
+    if (!userId) return;
+    // Assume parsedData.skills is an array of skill strings
+    // For each skill, create or update a CandidateSkill entry with weight=5
+    for (const skill of parsedData.skills || []) {
+    await fetch('/api/candidate/skills', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ candidateId: userId, skill, weight: 5 }),
+    });
+  }
+}
+
   }
 
   async function handleUpload() {
