@@ -9,7 +9,6 @@ A next-generation, AI-powered recruitment platform that connects recruiters with
 - [Usage](#usage)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Project Overview
 The Hiring Platform is designed to streamline the recruitment process by integrating advanced resume parsing, intelligent job-candidate matching, and a suite of tools for both candidates and recruiters. The application supports role-based views, allowing candidates to browse and apply for jobs, and recruiters to post jobs, track applications, schedule interviews, and communicate via an internal messaging system.
