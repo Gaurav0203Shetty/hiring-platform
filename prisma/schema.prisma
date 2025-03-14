@@ -14,17 +14,30 @@ datasource db {
 }
 
 model User {
-  id              String           @id @default(uuid())
-  email           String           @unique
-  name            String?
-  password        String
-  role            Role
-  skills          String? // Optional: candidate's skills as a comma-separated string
-  jobs            Job[]            @relation("UserJobs")
-  applications    Application[]    @relation("CandidateApplications")
-  candidateSkills CandidateSkill[] @relation("UserCandidateSkills")
-  Interview       Interview[]
-  Favorite        Favorite[]
+  id               String           @id @default(uuid())
+  email            String           @unique
+  name             String?
+  password         String
+  role             Role
+  skills           String? // Candidate skills, if any
+  jobs             Job[]            @relation("UserJobs")
+  applications     Application[]    @relation("CandidateApplications")
+  candidateSkills  CandidateSkill[] @relation("UserCandidateSkills")
+  sentMessages     Message[]        @relation("SentMessages")
+  receivedMessages Message[]        @relation("ReceivedMessages")
+  Interview        Interview[]
+  Favorite         Favorite[]
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  content    String
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
 }
 
 model CandidateSkill {
@@ -79,8 +92,8 @@ model Favorite {
   jobId       String
   createdAt   DateTime @default(now())
 
-  candidate   User     @relation(fields: [candidateId], references: [id])
-  job         Job      @relation(fields: [jobId], references: [id])
+  candidate User @relation(fields: [candidateId], references: [id])
+  job       Job  @relation(fields: [jobId], references: [id])
 
   @@unique([candidateId, jobId])
 }

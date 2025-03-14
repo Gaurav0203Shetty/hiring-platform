@@ -19,12 +19,16 @@ export default function Header() {
     links.push({ href: '/candidate/profile', label: 'My Profile' });
     links.push({ href: '/candidate/interviews', label: 'My Interviews' });
     links.push({ href: '/candidate/favorites', label: 'Favorites' });
+    links.push({ href: '/candidate/resume-improvement', label: 'Resume Improvement' });
+    links.push({ href: '/candidate/interview-questions', label: 'Interview Qs' });
+    links.push({ href: '/messaging', label: 'Messaging' });
   } else if (session?.user?.role === 'RECRUITER') {
     links.push({ href: '/recruiter/dashboard', label: 'Dashboard' });
     links.push({ href: '/recruiter/jobs/new', label: 'Post Job' });
     links.push({ href: '/recruiter/applications', label: 'Applications' });
     links.push({ href: '/recruiter/analytics', label: 'Analytics' });
     links.push({ href: '/recruiter/interviews', label: 'Interviews' });
+    links.push({ href: '/messaging', label: 'Messaging' });
   }
 
   // Auth link changes based on session.
