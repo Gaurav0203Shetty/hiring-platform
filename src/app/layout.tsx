@@ -1,4 +1,4 @@
-import '/Users/sapnil/Desktop/hiring-platform/src/app/globals.css';
+import '../app/globals.css';
 import Header from '@/components/Header';
 import { Providers } from './providers';
 
