@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { calculateAdvancedMatch } from '@/lib/match';
+import { calculateAdvancedMatchBreakdown } from '@/lib/match';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   const candidateText = candidate.skills || '';
   const jobText = job.description || '';
 
-  const score = calculateAdvancedMatch(candidateSkills, jobSkills, candidateText, jobText);
+  const score = calculateAdvancedMatchBreakdown(candidateSkills, jobSkills, candidateText, jobText);
 
   return NextResponse.json([{ candidateId: candidate.id, score }]);
 }
